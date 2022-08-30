@@ -53,8 +53,10 @@ df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
 ggplot(df, aes(trt, outcome)) +
     geom_col_pattern(aes(fill = trt), colour = 'black', 
                      pattern = 'multicolor_stripe',
-                     pattern_fill = "grey30,grey70,white,grey70") +
-    theme(legend.key.size = unit(1.5, 'cm'))
+                     pattern_fill = "grey30,grey70,white,grey70",
+                     pattern_density = 0.2,
+                     pattern_spacing = 0.1) +
+    theme(legend.key.size = unit(1.2, 'cm'))
 
 ## -----------------------------------------------------------------------------
 tiling3_pattern <- function(params, boundary_df, aspect_ratio, legend = FALSE) {
@@ -83,8 +85,10 @@ options(ggpattern_geometry_funcs = list(tiling3 = tiling3_pattern))
 ## -----------------------------------------------------------------------------
 df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
 ggplot(df, aes(trt, outcome)) +
-    geom_col_pattern(aes(fill = trt, pattern_type = trt), 
-                     pattern = 'tiling3', pattern_angle = 45) +
+    geom_col_pattern(aes(fill = trt, pattern_type = trt),
+                     pattern = 'tiling3',
+                     pattern_angle = 45,
+                     pattern_spacing = 0.15) +
     scale_pattern_type_manual(values = c("hexagonal", "tetrakis_square", "rhombille")) +
-    theme(legend.key.size = unit(1.5, 'cm'))
+    theme(legend.key.size = unit(1.2, 'cm'))
 

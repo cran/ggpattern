@@ -1,11 +1,12 @@
 Package: ggpattern
 Type: Package
 Title: 'ggplot2' Pattern Geoms
-Version: 0.4.2
+Version: 1.0.0
 Authors@R: c(person("Mike", "FC", role = "aut",
                     email = "mikefc@coolbutuseless.com"),
              person("Trevor L", "Davis", role = c("aut", "cre"),
-                    email = "trevor.l.davis@gmail.com"),
+                    email = "trevor.l.davis@gmail.com",
+                    comment = c(ORCID = "0000-0001-6341-4639")),
              person("ggplot2 authors", role = "aut"))
 Description: Provides 'ggplot2' geoms filled with various patterns.  Includes a patterned version of every 'ggplot2' geom that has a region that can be filled with a pattern.  Provides a suite of 'ggplot2' aesthetics and scales for controlling pattern appearances.  Supports over a dozen builtin patterns (every pattern implemented by 'gridpattern') as well as allowing custom user-defined patterns.
 URL: https://github.com/coolbutuseless/ggpattern,
@@ -13,8 +14,8 @@ URL: https://github.com/coolbutuseless/ggpattern,
 BugReports: https://github.com/coolbutuseless/ggpattern/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
-RoxygenNote: 7.1.2
-Imports: ggplot2, glue, grid, gridpattern (>= 0.5.1), rlang, scales,
+RoxygenNote: 7.2.1
+Imports: ggplot2, glue, grid, gridpattern (>= 1.0.1), rlang, scales,
 Suggests: ambient, dplyr, gganimate, knitr, magick, mapproj, maps, png,
         ragg (>= 1.2.0), readr, rmarkdown, sf (>= 0.7-3), testthat (>=
         2.1.0), vdiffr
@@ -34,10 +35,10 @@ Collate: 'aaa-ggplot2-compat-plyr.R' 'aaa-ggplot2-ggplot-global.R'
         'scale-pattern-size.R' 'scale-pattern-viridis.R'
         'scale-pattern.R' 'zxx.r' 'zzz.R'
 NeedsCompilation: no
-Packaged: 2022-02-22 17:33:04 UTC; trevorld
+Packaged: 2022-08-30 20:03:00 UTC; trevor
 Author: Mike FC [aut],
-  Trevor L Davis [aut, cre],
+  Trevor L Davis [aut, cre] (<https://orcid.org/0000-0001-6341-4639>),
   ggplot2 authors [aut]
 Maintainer: Trevor L Davis <trevor.l.davis@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-02-23 20:20:02 UTC
+Date/Publication: 2022-08-30 20:40:02 UTC
