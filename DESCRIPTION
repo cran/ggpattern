@@ -1,7 +1,7 @@
 Package: ggpattern
 Type: Package
 Title: 'ggplot2' Pattern Geoms
-Version: 1.0.0
+Version: 1.0.1
 Authors@R: c(person("Mike", "FC", role = "aut",
                     email = "mikefc@coolbutuseless.com"),
              person("Trevor L", "Davis", role = c("aut", "cre"),
@@ -15,7 +15,8 @@ BugReports: https://github.com/coolbutuseless/ggpattern/issues
 License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.2.1
-Imports: ggplot2, glue, grid, gridpattern (>= 1.0.1), rlang, scales,
+Imports: ggplot2 (>= 3.4.0), glue, grid, gridpattern (>= 1.0.2), rlang,
+        scales,
 Suggests: ambient, dplyr, gganimate, knitr, magick, mapproj, maps, png,
         ragg (>= 1.2.0), readr, rmarkdown, sf (>= 0.7-3), testthat (>=
         2.1.0), vdiffr
@@ -35,10 +36,10 @@ Collate: 'aaa-ggplot2-compat-plyr.R' 'aaa-ggplot2-ggplot-global.R'
         'scale-pattern-size.R' 'scale-pattern-viridis.R'
         'scale-pattern.R' 'zxx.r' 'zzz.R'
 NeedsCompilation: no
-Packaged: 2022-08-30 20:03:00 UTC; trevor
+Packaged: 2022-11-09 19:53:24 UTC; trevor
 Author: Mike FC [aut],
   Trevor L Davis [aut, cre] (<https://orcid.org/0000-0001-6341-4639>),
   ggplot2 authors [aut]
 Maintainer: Trevor L Davis <trevor.l.davis@gmail.com>
 Repository: CRAN
-Date/Publication: 2022-08-30 20:40:02 UTC
+Date/Publication: 2022-11-09 23:10:02 UTC
