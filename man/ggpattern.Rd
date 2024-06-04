@@ -2,8 +2,8 @@
 % Please edit documentation in R/ggpattern-package.R
 \docType{package}
 \name{ggpattern}
-\alias{ggpattern}
 \alias{ggpattern-package}
+\alias{ggpattern}
 \title{ggpattern: 'ggplot2' Pattern Geoms}
 \description{
 \if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
@@ -36,18 +36,18 @@ support any/all these features.  See \url{https://www.stat.auckland.ac.nz/~paul/
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/coolbutuseless/ggpattern}
-  \item \url{https://coolbutuseless.github.io/package/ggpattern/index.html}
-  \item Report bugs at \url{https://github.com/coolbutuseless/ggpattern/issues}
+  \item \url{https://github.com/trevorld/ggpattern}
+  \item \url{https://trevorldavis.com/R/ggpattern/dev/}
+  \item Report bugs at \url{https://github.com/trevorld/ggpattern/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Trevor L Davis \email{trevor.l.davis@gmail.com} (\href{https://orcid.org/0000-0001-6341-4639}{ORCID})
+\strong{Maintainer}: Trevor L. Davis \email{trevor.l.davis@gmail.com} (\href{https://orcid.org/0000-0001-6341-4639}{ORCID})
 
 Authors:
 \itemize{
-  \item Mike FC \email{mikefc@coolbutuseless.com}
+  \item Mike FC
   \item ggplot2 authors
 }
 

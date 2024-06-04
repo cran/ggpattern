@@ -1,14 +1,14 @@
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' @rdname geom-docs
 #' @export
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 geom_density_pattern <- function(mapping = NULL, data = NULL,
                                  stat = "density", position = "identity",
                                  ...,
                                  na.rm = FALSE,
                                  orientation = NA,
                                  show.legend = NA,
-                                 inherit.aes = TRUE) {
+                         inherit.aes = TRUE,
+                         outline.type = "upper") {
+  outline.type <- arg_match0(outline.type, c("both", "upper", "lower", "full"))
 
   layer(
     data = data,
@@ -18,47 +18,23 @@ geom_density_pattern <- function(mapping = NULL, data = NULL,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
-    params = list(
+    params = list2(
       na.rm = na.rm,
       orientation = orientation,
+      outline.type = outline.type,
       ...
     )
   )
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' @rdname ggpattern-ggproto
 #' @format NULL
-#' @include geom-ribbon.R
+#' @usage NULL
 #' @export
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GeomDensityPattern <- ggproto(
-  "GeomDensityPattern", GeomAreaPattern,
-  default_aes = augment_aes(
-    pattern_aesthetics,
-    ggplot2::aes(
-      colour   = 'black',
-      fill     = "NA",
-      linewidth= 0.5,
-      linetype = 1,
-      weight   = 1,
-      alpha    = NA
-    )
-  ),
-  rename_size = TRUE
+#' @include geom-ribbon.R
+GeomDensityPattern <- ggproto("GeomDensityPattern", GeomAreaPattern,
+  default_aes = defaults(
+    aes(fill = NA, weight = 1, colour = "black", alpha = NA),
+    defaults(GeomArea$default_aes, pattern_aesthetics)
+  )
 )
-
-
-
-if (FALSE) {
-  library(ggplot2)
-
-  ggplot(mtcars) +
-    geom_density_pattern(aes(x=mpg, fill=as.factor(cyl), pattern = as.factor(cyl))) +
-    theme_bw() +
-    labs(title = "ggpattern::geom_density_pattern()")
-}
-
-
-
-

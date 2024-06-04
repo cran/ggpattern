@@ -1,4 +1,62 @@
-# ggpattern (development)
+# ggpattern 1.1.1
+
+## Breaking changes
+
+* The argument `binwidth` has been removed from `geom_bar_pattern()`.
+  This argument was deprecated with ggpattern 0.1.0 (2020-04-01).
+* The `draw_key_polygon_pattern()` called by `geom_sf_pattern()` is now passed in its
+  actual aspect ratio (instead of 1).
+  This may cause your legends to `geom_sf_pattern()` to look different.
+
+## Deprecated features
+
+* In line with upstream changes in `{ggplot2}` the `trans` argument has been deprecated in various scales functions.
+  Use the new `transform` argument instead (#113).
+* `outline.type = "legacy"` is now formally deprecated in
+  `geom_area_pattern()` and `geom_ribbon_pattern()`.
+  Use `outline.type = "full"` instead.
+  `outline.type = "legacy"` was deprecated with ggpattern 0.1.0 (2020-04-01)
+  but this is the first time `outline.type = "full"` has been supported as an alternative.
+
+## New features
+
+* Geoms now more consistently expose the `lineend` and `linejoin` parameters (#94).
+  This matches a similar upstream change in ggplot2 3.4.0.
+* `geom_area_pattern()` and `geom_ribbon_pattern()` now accept `outline.type = "lower"` and `outline.type = "full"`.
+  `geom_density_pattern()` now exposes the `outline.type` parameter.
+* `geom_bar_pattern()` and `geom_col_pattern()` now accept parameter `just`.
+  The `just` parameter was added to `ggplot2::geom_bar()` and `ggplot2::geom_col()` with ggplot2 3.4.0.
+* `geom_boxplot_pattern()` now accept the `outliers` and `staplewidth` parameters.
+  The `outliers` and `staplewidth` parameters were added to `geom_boxplot()` in ggplot2 3.5.0.
+* `geom_sf_pattern()` now accepts the `arrow` parameter.
+  The `arrow` parameter was added to `geom_sf()` in ggplot2 3.5.0.
+* `geom_violin_pattern()` now accepts the `bounds` parameter.
+  The `bounds` parameter was added to `geom_violin()` in ggplot2 3.5.0.
+* Each pattern aesthetic may now be a list of vectors with each list element
+  providing that aesthetic for a different pattern (#100).
+  Most builtin `{gridpattern}` "geometry" patterns support multiple fill colors etc. which previously we could only access in `{ggpattern}` via custom patterns.
+* The `fill`, `pattern_fill`, and `pattern_fill2` aesthetics may now be (a list of) gradient/pattern fills
+  (in addition to color strings) (#112).
+  Note using gradient/pattern fills will require R (>= 4.2), a graphics device with support for the gradient/pattern fill feature,
+  and will work only for a subset of patterns (i.e. most of the "geometry" patterns).
+  Use of just color fills should continue to work on a wider variety of R versions, graphics devices, and patterns.
+* {ggpattern} now supports the `pattern_units` aesthetic (#81).
+  Supported by most "geometry" patterns.
+  It sets the `grid::unit()` used by the `pattern_spacing`, `pattern_xoffset`, `pattern_yoffset`,
+  and (for the "wave" pattern) the `pattern_frequency` aesthetics.
+  Default is "snpc" while "cm" and "inches" are likely alternatives.
+
+* `geom_bin_2d_pattern()` is now an alias for `geom_bin2d_pattern()`.
+  This matches `{ggplot2}` which has both `geom_bin_2d()` and `geom_bin2d()`.
+
+## Bug fixes and minor improvements
+
+* `draw_key_boxplot_pattern()`, `draw_key_crossbar_pattern()`, and `draw_key_polygon_pattern()` `aspect_ratio` argument
+  now defaults to `get_aspect_ratio()`.
+* Several (continuous) scales now have an `...` argument which will be passed to `ggplot2::continuous_scale()`.
+* The default `na.value` for `scale_pattern_continuous()`, `scale_pattern_discrete()`, and `scale_pattern_manual()` is now "none" (#107).
+
+# ggpattern 1.0.1
 
 ## Deprecated features
 

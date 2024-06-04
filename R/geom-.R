@@ -1,9 +1,6 @@
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# This is the list of all pattern aesthetics.
+# * This is the list of all pattern aesthetics.
 # * List is shared across every geom
 # * Not all aesthetics are used by all patterns.
-#   is only used by the 'point' pattern.
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 pattern_aesthetics <- aes(
   pattern                  = 'stripe',
   pattern_type             = NA,
@@ -43,62 +40,9 @@ pattern_aesthetics <- aes(
 
   pattern_grid             = 'square',
   pattern_rot              = 0,
-  pattern_res              = getOption("ggpattern_res", NA)
+  pattern_res              = getOption("ggpattern_res", NA),
+  pattern_units            = 'snpc'
 )
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Utils for debugging viewports
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-print_vp_tree <- function() {
-  startport <- grid::current.viewport()$name
-  on.exit({
-    if (startport != 'ROOT') {
-      grid::seekViewport(startport)
-    }
-  })
-
-  # myvp <<- grid::current.viewport()
-
-  while (TRUE) {
-    vp <- grid::current.viewport()
-    message(
-      "-------------- ",
-      sprintf("%20s", vp$name),
-      "  ",
-      round(get_aspect_ratio(), 3)
-    )
-    tmat <- grid::current.transform()
-    print(tmat)
-    message(
-      round(tmat[3, 1]/tmat[3, 2], 3), "  ",
-      round(tmat[3, 2]/tmat[3, 1], 3)
-    )
-
-    if (vp$name == 'layout') {
-      # myll <<- grid::current.viewport()
-    }
-
-
-    if (vp$name == 'ROOT') {
-      message("ROOT. done")
-      break
-    }
-
-    grid::upViewport()
-  }
-}
-
-
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-# Utils for debugging viewports
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-verboseGrob <- function(name = "Viewport Tree") {
-  delayGrob({
-    message("=================== ", name, " ===================")
-    print_vp_tree()
-    nullGrob()
-  }, list=list(name = name))
-}
 
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' Create the patterned area to be used in the legend key
@@ -114,46 +58,50 @@ create_key_pattern_grob <- function(data, params, size, aspect_ratio, boundary_d
   data$size <- data$linewidth %||% data$size %||% 0.5
   lwd <- min(data$size, min(size) / 4) * .pt
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # Convert the width/height of the key into npc sizes
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  key_native_x <- abs(as.numeric(grid::convertWidth (unit(size[1], 'mm'), 'native')))
-  key_native_y <- abs(as.numeric(grid::convertHeight(unit(size[2], 'mm'), 'native')))
+  if (data$pattern_units == "snpc") {
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Convert the width/height of the key into npc sizes
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      key_native_x <- abs(as.numeric(grid::convertWidth (unit(size[1], 'mm'), 'native')))
+      key_native_y <- abs(as.numeric(grid::convertHeight(unit(size[2], 'mm'), 'native')))
 
-  vp <- grid::current.viewport()
-  vp_native_x <- abs(diff(vp$xscale))
-  vp_native_y <- abs(diff(vp$yscale))
+      vp <- grid::current.viewport()
+      vp_native_x <- abs(diff(vp$xscale))
+      vp_native_y <- abs(diff(vp$yscale))
 
 
-  key_npc_x <- abs(as.numeric(grid::convertWidth (unit(size[1], 'mm'), 'npc')))
-  key_npc_y <- abs(as.numeric(grid::convertHeight(unit(size[2], 'mm'), 'npc')))
+      key_npc_x <- abs(as.numeric(grid::convertWidth (unit(size[1], 'mm'), 'npc')))
+      key_npc_y <- abs(as.numeric(grid::convertHeight(unit(size[2], 'mm'), 'npc')))
 
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # What's the overall scale_factor?
-  # The legend is actually drawn in its own viewport with an area of 1x1 npc.
-  # I have to do some fancy scaling to draw the current pattern in this
-  # scaled viewport as currently appears in the full viewport of the plot.
-  # i.e. I need to make the pattern in the legend look like the pattern in the
-  # plot.
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # What's the overall scale_factor?
+      # The legend is actually drawn in its own viewport with an area of 1x1 npc.
+      # I have to do some fancy scaling to draw the current pattern in this
+      # scaled viewport as currently appears in the full viewport of the plot.
+      # i.e. I need to make the pattern in the legend look like the pattern in the
+      # plot.
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-  denom <- sqrt(2) * (1/aspect_ratio) * 9/8
+      denom <- sqrt(2) * (1/aspect_ratio) * 9/8
 
-  if (vp_native_x/vp_native_y < aspect_ratio) {
-    scale_factor <- 1/key_npc_x / aspect_ratio / denom
+      if (vp_native_x/vp_native_y < aspect_ratio) {
+        scale_factor <- 1/key_npc_x / aspect_ratio / denom
+      } else {
+        scale_factor <- 1/key_npc_y/denom
+      }
+
+      scale_factor <- scale_factor * data$pattern_key_scale_factor
+
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      # Compensate for box the key is rendered in being different aspect ratios
+      # i.e. theme(legend.key.width  = unit(2, 'cm'),
+      #            legend.key.height = unit(3, 'cm')
+      #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      key_aspect_ratio <- key_native_x/key_native_y
+      scale_factor <- scale_factor / key_aspect_ratio
   } else {
-    scale_factor <- 1/key_npc_y/denom
+      scale_factor <- 1.00 * data$pattern_key_scale_factor
   }
-
-  scale_factor <- scale_factor * data$pattern_key_scale_factor
-
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  # Compensate for box the key is rendered in being different aspect ratios
-  # i.e. theme(legend.key.width  = unit(2, 'cm'),
-  #            legend.key.height = unit(3, 'cm')
-  #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  key_aspect_ratio <- key_native_x/key_native_y
-  scale_factor <- scale_factor / key_aspect_ratio
 
   this_params <- fill_default_params(data)
 
@@ -213,7 +161,7 @@ create_key_pattern_grob <- function(data, params, size, aspect_ratio, boundary_d
 #'   }
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-draw_key_polygon_pattern <- function(data, params, size, aspect_ratio = 1) {
+draw_key_polygon_pattern <- function(data, params, size, aspect_ratio = get_aspect_ratio()) {
 
   # message("draw_key_polygon_pattern(): aspect_ratio = ", aspect_ratio)
   lwd <- min(data$linewidth %||% data$size, min(size) / 4) #* .pt
@@ -254,7 +202,7 @@ draw_key_polygon_pattern <- function(data, params, size, aspect_ratio = 1) {
         ))
   }
   col <- data$colour %||% NA
-  fill <- scales::alpha(data$fill %||% "grey20", data$alpha)
+  fill <- fill_alpha(data$fill %||% "grey20", data$alpha)
   key_grob_fill <- key_grob_fn(NA, fill, 0)
   key_grob_border <- key_grob_fn(col, NA, lwd)
 
@@ -273,7 +221,7 @@ draw_key_polygon_pattern <- function(data, params, size, aspect_ratio = 1) {
 #' @rdname draw_key_polygon_pattern
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-draw_key_boxplot_pattern <- function(data, params, size, aspect_ratio = 1) {
+draw_key_boxplot_pattern <- function(data, params, size, aspect_ratio = get_aspect_ratio()) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the boundary_df for the rectangular region of the crossbar.
@@ -293,7 +241,7 @@ draw_key_boxplot_pattern <- function(data, params, size, aspect_ratio = 1) {
     rectGrob(height = 0.5, width = 0.75),
     gp = gpar(
       col = data$colour %||% "grey20",
-      fill = scales::alpha(data$fill %||% "white", data$alpha),
+      fill = fill_alpha(data$fill %||% "white", data$alpha),
       lwd = (data$linewidth %||% data$size %||% 0.5) * .pt,
       lty = data$linetype %||% 1
     )
@@ -306,7 +254,7 @@ draw_key_boxplot_pattern <- function(data, params, size, aspect_ratio = 1) {
     linesGrob(c(0.125, 0.875), 0.5),
     gp = gpar(
       col = data$colour %||% "grey20",
-      fill = scales::alpha(data$fill %||% "white", data$alpha),
+      fill = fill_alpha(data$fill %||% "white", data$alpha),
       lwd = (data$linewidth %||% data$size %||% 0.5) * .pt,
       lty = data$linetype %||% 1
     )
@@ -328,7 +276,7 @@ draw_key_boxplot_pattern <- function(data, params, size, aspect_ratio = 1) {
 #' @rdname draw_key_polygon_pattern
 #' @export
 #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-draw_key_crossbar_pattern <- function(data, params, size, aspect_ratio = 1) {
+draw_key_crossbar_pattern <- function(data, params, size, aspect_ratio = get_aspect_ratio()) {
 
   #~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   # Create the boundary_df for the rectangular region of the crossbar.
@@ -352,7 +300,7 @@ draw_key_crossbar_pattern <- function(data, params, size, aspect_ratio = 1) {
     rectGrob(height = 0.5, width = 0.75),
     gp = gpar(
       col = data$colour %||% "grey20",
-      fill = scales::alpha(data$fill %||% "white", data$alpha),
+      fill = fill_alpha(data$fill %||% "white", data$alpha),
       lwd = (data$linewidth %||% data$size %||% 0.5) * .pt,
       lty = data$linetype %||% 1
     )
@@ -362,7 +310,7 @@ draw_key_crossbar_pattern <- function(data, params, size, aspect_ratio = 1) {
     linesGrob(c(0.125, 0.875), 0.5),
     gp = gpar(
       col = data$colour %||% "grey20",
-      fill = scales::alpha(data$fill %||% "white", data$alpha),
+      fill = fill_alpha(data$fill %||% "white", data$alpha),
       lwd = (data$linewidth %||% data$size %||% 0.5) * .pt,
       lty = data$linetype %||% 1
     )
@@ -378,90 +326,12 @@ draw_key_crossbar_pattern <- function(data, params, size, aspect_ratio = 1) {
   )
 }
 
-
-
-
-if (FALSE) {
-  library(ggplot2)
-  library(dplyr)
-
-  plot_df <- mpg %>% filter(manufacturer %in% c('lincoln', 'mercury', 'audi'))
-
-  ggplot(plot_df, aes(x = manufacturer)) +
-    geom_bar_pattern(
-      aes(
-        pattern_angle   = manufacturer,
-        pattern         = manufacturer,
-        pattern_fill    = manufacturer
-      ),
-      fill            = 'white',
-      colour          = 'black',
-      # pattern_angle   = 10,
-      pattern_density = 0.2,
-      pattern_spacing = 0.03,
-      pattern_alpha   = 0.3,
-      # pattern_fill    = 'darkgreen',
-      pattern_colour  = NA,
-      pattern_key_scale_factor = 1.2
-    ) +
-    # geom_bar_pattern(
-    #   aes(
-    #     pattern_angle   = manufacturer,
-    #     pattern         = manufacturer
-    #   ),
-    #   fill            = NA,
-    #   colour          = 'black',
-    #   # pattern_angle   = 10,
-    #   pattern_density = 0.1,
-    #   pattern_spacing = 0.021,
-    #   pattern_alpha   = 0.5,
-  #   pattern_xoffset = 0.03
-  # ) +
-  # theme_void() +
-  theme_bw() +
-    labs(title = "ggpattern::geom_bar_pattern()") +
-    scale_pattern_density_discrete() +
-    scale_pattern_manual(values = c(lincoln = 'stripe', mercury = 'crosshatch', audi = 'stripe')) +
-    theme(
-      legend.key.size = unit(3, 'cm')#,
-      # legend.justification = c(1, 0),
-      # legend.position = c(0.9, 0.1)
-    ) +
-    coord_fixed(ratio = 0.25) +
-    # facet_wrap(~manufacturer) +
-    NULL
-
-
-  pdf("working/test.pdf", width = 8, height = 4);
-  p + coord_fixed(ratio = 0.5);
-  # p
-  dev.off()
-
+check_linewidth <- function(data, name) {
+  if (is.null(data$linewidth) && !is.null(data$size)) {
+    lifecycle::deprecate_warn("1.0.1",
+                              I(paste0("Using the `size` aesthetic with ", name)),
+                              I("the `linewidth` aesthetic"))
+    data$linewidth <- data$size
+  }
+  data
 }
-
-
-
-if (FALSE) {
-  df <- data_frame(
-    x = c(0.5, 1, 1.5, 2, 2.5),
-    y = sqrt(c(8, 2, 1, 0.5, 0.25))
-  )
-
-  ggplot(df, aes(x, y)) +
-    geom_point() +
-    geom_line()
-
-}
-
-
-
-
-
-
-
-
-
-
-
-
-

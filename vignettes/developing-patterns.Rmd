@@ -40,7 +40,6 @@ This vignette shows how to:
 * [Aesthetic use by `{ggpattern}` patterns](#aes-by-pattern)
 * [Geometry-based pattern functions](#geometry-based)
 * [Array-based pattern functions](#array-based)
-* [Example: multiple colored stripes (serializing aesthetics)](#geometry-example-1)
 * [Example: Three-color polygon tilings (adapting `{ggplot2}` aesthetics)](#geometry-example-2)
 * [Other examples](#other-example)
 
@@ -75,8 +74,8 @@ so may make your pattern more useful for others:
 | `pattern_colour`           | Stroke colour                                 | 'grey20'   | colour                             |
 | `pattern_density`          | Approx. fraction of area the pattern fills    | 0.2        | value in range [0, 1]              |
 | `pattern_filename`         | Image filename/URL                            | ''         | Filename/URL                       |
-| `pattern_fill2`            | Second fill colour                            | '#4169E1'  | colour                             |
-| `pattern_fill`             | Fill colour                                   | 'grey80'   | colour                             |
+| `pattern_fill`             | Fill colour                                   | 'grey80'   | colour (or grid pattern/gradient)  |
+| `pattern_fill2`            | Second fill colour                            | '#4169E1'  | colour (or grid pattern/gradient)  |
 | `pattern_filter`           | Image scaling filter                          | 'lanczos'  | `magick::filter_types`             |
 | `pattern_frequency`        | Frequency                                     | 0.1        |                                    |
 | `pattern_gravity`          | Image placement                               | 'center'   | `magick::gravity_types`            |
@@ -91,11 +90,12 @@ so may make your pattern more useful for others:
 | `pattern_scale`            | Scale                                         | 1          | Multiplier                         |
 | `pattern_shape`            | Plotting shape                                | 1          | shapes                             |
 | `pattern_size`             | Stroke linewidth                              | 1          | linewidth                          |
-| `pattern_spacing`          | Spacing between repetitions of pattern        | 0.05       | value in range [0, 1] (snpc units) |
+| `pattern_spacing`          | Spacing between repetitions of pattern        | 0.05       | value in  `pattern_units` grid units |
 | `pattern_subtype`          | Generic control option                        | NA         | pattern-dependent                  |
 | `pattern_type`             | Generic control option                        | NA         | pattern-dependent                  |
-| `pattern_xoffset`          | Shift pattern along x axis                    | 0          | value in range [0, 1] (snpc units) |
-| `pattern_yoffset`          | Shift pattern along y axis                    | 0          | value in range [0, 1] (snpc units) |
+| `pattern_units`            | Pattern grid unit                             | 'snpc'     | `grid::unit()` unit i.e. 'snpc', 'cm', and 'inches' |
+| `pattern_xoffset`          | Shift pattern along x axis                    | 0          | value in  `pattern_units` grid units |
+| `pattern_yoffset`          | Shift pattern along y axis                    | 0          | value in  `pattern_units` grid units |
 
 </summary>
 </details>
@@ -179,64 +179,6 @@ options(ggpattern_geometry_funcs = list(your_pattern_name = your_pattern_functio
 
 Pattern names must be different from any of the builtin patterns included in `{gridpattern}`.
 
-<a name="geometry-example-1"></a> Example: Multiple colored stripes (serializing aesthetics)
---------------------------------------------------------------------------------------------
-
-All geometry-based pattern creation functions must:
-
-1. Have the exact function signature: `function(params, boundary_df, aspect_ratio, legend)`
-    * `params` - parameters from the geom (the aesthetics) e.g `pattern_fill`
-    * `boundary_df` - data.frame containing polygon information i.e. The `polygon_df` format.
-    * `aspect_ratio` - the best guess that `{gridpattern}` / `{ggpattern}` is able to make as to the
-      aspect ratio of the **viewport** in which this pattern is being rendered.
-    * `legend` logical value to indicate whether or not this function is being called
-      to render a key legend or the in-place geom fill.
-2. Return a grid grob bounded by the boundary represented by `boundary_df` 
-   (including grid structures like a `grid::grobTree()`).
-
-Since `{ggplot2}` only allows single-valued aesthetics you can only normally create single-colored stripe patterns in `{ggpattern}` even though the underlying `{gridpattern}` stripe pattern supports multiple-colored stripes.  In this example we'll create a 'multicolor\_stripe' pattern that serializes multiple `pattern_colour` and `pattern_fill` colors using comma-separated values.
-
-
-```{r}
-multicolor_stripe_pattern <- function(params, boundary_df, aspect_ratio, 
-                                      legend = FALSE) {
-    args <- as.list(params)
-    args <- args[grep("^pattern_", names(args))]
-
-    args$pattern_colour <- strsplit(args$pattern_colour, ",")[[1]]
-    args$pattern_fill <- strsplit(args$pattern_fill, ",")[[1]]
-
-    args$pattern <- "stripe"
-    args$x <- boundary_df$x
-    args$y <- boundary_df$y
-    args$id <- boundary_df$id
-    args$prefix <- ""
-
-    do.call(gridpattern::patternGrob, args)
-}
-```
-
-A global option `ggpattern_geometry_funcs` is a named list which contains 
-geometry-based pattern creating functions to use outside of `ggpattern`.
-
-The **name** used in this list corresponds to the `pattern` name used with 
-the geom - in this case we will be using `pattern = 'polygon'`.
-
-```{r}
-options(ggpattern_geometry_funcs = list(multicolor_stripe = multicolor_stripe_pattern))
-```
-
-```{r}
-df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
-ggplot(df, aes(trt, outcome)) +
-    geom_col_pattern(aes(fill = trt), colour = 'black', 
-                     pattern = 'multicolor_stripe',
-                     pattern_fill = "grey30,grey70,white,grey70",
-                     pattern_density = 0.2,
-                     pattern_spacing = 0.1) +
-    theme(legend.key.size = unit(1.2, 'cm'))
-```
-
 <a name="geometry-example-2"></a> Example: Three-color polygon tilings (adapting `{ggplot2}` aesthetics)
 ---------------------------------------------------------------------------------------------------------
 
@@ -302,4 +244,4 @@ ggplot(df, aes(trt, outcome)) +
 
 The `{gridpattern}` package contains a vignette on developing `{gridpattern}` / `{ggpattern}` patterns with a few more examples including an example of layering patterns on top of each other.  Use [`vignette("developing-patterns", package="gridpattern")`](https://trevorldavis.com/R/gridpattern/dev/articles/developing-patterns.html) to see it.
 
-Also the `{gridpattern}` source contains the full source code for seventeen patterns: https://github.com/trevorld/gridpattern/tree/main/R
+Also the `{gridpattern}` source contains the full source code for  `r length(gridpattern::names_pattern)`patterns: https://github.com/trevorld/gridpattern/tree/main/R

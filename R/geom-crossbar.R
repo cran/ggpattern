@@ -1,7 +1,5 @@
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-#' @rdname geom-docs
 #' @export
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+#' @rdname geom-docs
 geom_crossbar_pattern <- function(mapping = NULL, data = NULL,
                                   stat = "identity", position = "identity",
                                   ...,
@@ -18,7 +16,7 @@ geom_crossbar_pattern <- function(mapping = NULL, data = NULL,
     position = position,
     show.legend = show.legend,
     inherit.aes = inherit.aes,
-    params = list(
+    params = list2(
       fatten = fatten,
       na.rm = na.rm,
       orientation = orientation,
@@ -27,36 +25,25 @@ geom_crossbar_pattern <- function(mapping = NULL, data = NULL,
   )
 }
 
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 #' @rdname ggpattern-ggproto
 #' @format NULL
+#' @usage NULL
 #' @export
-#~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-GeomCrossbarPattern <- ggproto(
-  "GeomCrossbarPattern", GeomCrossbar,
+GeomCrossbarPattern <- ggproto("GeomCrossbarPattern", GeomCrossbar,
 
-  default_aes = augment_aes(
-    pattern_aesthetics,
-    aes(
-      colour   = "black",
-      fill     = NA,
-      linewidth= 0.5,
-      linetype = 1,
-      alpha    = NA
-    )
+
+  default_aes = defaults(aes(colour = "black", fill = NA, linewidth = 0.5, linetype = 1,
+                             alpha = NA),
+                         pattern_aesthetics
   ),
 
-  aspect_ratio = 1,
+  draw_key = function(self, ...) draw_key_crossbar_pattern(...),
 
-  draw_key = function(self, ...) {
-    draw_key_crossbar_pattern(..., aspect_ratio = self$aspect_ratio)
-  },
-
-  draw_panel = function(self, data, panel_params, coord, fatten = 2.5, width = NULL, flipped_aes = FALSE) {
-
-    self$aspect_ratio <- get_aspect_ratio()
-
-    data <- ggplot2::flip_data(data, flipped_aes)
+  draw_panel = function(self, data, panel_params, coord, lineend = "butt",
+                        linejoin = "mitre", fatten = 2.5, width = NULL,
+                        flipped_aes = FALSE) {
+    data <- check_linewidth(data, snake_class(self))
+    data <- flip_data(data, flipped_aes)
 
     middle <- transform(data, x = xmin, xend = xmax, yend = y, linewidth = linewidth * fatten, alpha = NA)
 
@@ -65,14 +52,17 @@ GeomCrossbarPattern <- ggproto(
 
     if (has_notch) {
       if (data$ynotchlower < data$ymin  ||  data$ynotchupper > data$ymax)
-        message("notch went outside hinges. Try setting notch=FALSE.")
+        cli::cli_inform(c(
+          "Notch went outside hinges",
+          i = "Do you want {.code notch = FALSE}?"
+        ))
 
       notchindent <- (1 - data$notchwidth) * (data$xmax - data$xmin) / 2
 
       middle$x <- middle$x + notchindent
       middle$xend <- middle$xend - notchindent
 
-      box <- new_data_frame(list(
+      box <- data_frame0(
         x = c(
           data$xmin, data$xmin, data$xmin + notchindent, data$xmin, data$xmin,
           data$xmax, data$xmax, data$xmax - notchindent, data$xmax, data$xmax,
@@ -89,16 +79,15 @@ GeomCrossbarPattern <- ggproto(
         linetype = rep(data$linetype, 11),
         fill     = rep(data$fill, 11),
         group    = rep(seq_len(nrow(data)), 11)
-      ))
+      )
 
       # Copy across all the pattern aesthetics
       for (varname in names(pattern_aesthetics)) {
         box[[varname]] <- data[[varname]]
       }
-      # ))
     } else {
       # No notch
-      box <- new_data_frame(list(
+      box <- data_frame0(
         x = c(data$xmin, data$xmin, data$xmax, data$xmax, data$xmin),
         y = c(data$ymax, data$ymin, data$ymin, data$ymax, data$ymax),
         alpha    = rep(data$alpha, 5),
@@ -106,51 +95,22 @@ GeomCrossbarPattern <- ggproto(
         linewidth     = rep(data$linewidth, 5),
         linetype = rep(data$linetype, 5),
         fill     = rep(data$fill, 5),
-        group    = rep(seq_len(nrow(data)), 5)
-      ))
+        group    = rep(seq_len(nrow(data)), 5) # each bar forms it's own group
+      )
 
       # Copy across all the pattern aesthetics
       for (varname in names(pattern_aesthetics)) {
         box[[varname]] <- data[[varname]]
       }
     }
-    box <- ggplot2::flip_data(box, flipped_aes)
-    middle <- ggplot2::flip_data(middle, flipped_aes)
+    box <- flip_data(box, flipped_aes)
+    middle <- flip_data(middle, flipped_aes)
 
-    ggname("geom_crossbar", gTree(children = gList(
-      GeomPolygonPattern$draw_panel(box, panel_params, coord),
-      GeomSegment$draw_panel(middle, panel_params, coord)
+    ggname("geom_crossbar_pattern", gTree(children = gList(
+      GeomPolygonPattern$draw_panel(box, panel_params, coord, lineend = lineend, linejoin = linejoin),
+      GeomSegment$draw_panel(middle, panel_params, coord, lineend = lineend, linejoin = linejoin)
     )))
   },
+
   rename_size = TRUE
 )
-
-
-if (FALSE) {
-  library(ggplot2)
-
-  df <- data_frame(
-    trt = factor(c(1, 1, 2, 2)),
-    resp = c(1, 5, 3, 4),
-    group = factor(c(1, 2, 1, 2)),
-    upper = c(1.1, 5.3, 3.3, 4.2),
-    lower = c(0.8, 4.6, 2.4, 3.6)
-  )
-
-  ggplot(df, aes(trt, resp, colour = group)) +
-    geom_crossbar_pattern(aes(ymin = lower, ymax = upper), width = 0.2) +
-    theme_bw() +
-    labs(title = "ggpattern::geom_crossbar_pattern()")
-}
-
-
-
-
-
-
-
-
-
-
-
-

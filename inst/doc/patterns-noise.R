@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>",
@@ -9,8 +9,9 @@ knitr::opts_chunk$set(
 
 ## ----setup--------------------------------------------------------------------
 suppressPackageStartupMessages({
-  library(ggplot2)
-  library(ggpattern)
+  library("ggplot2")
+  library("ggpattern")
+  require("magick", quietly = TRUE)
 })
 
 ## -----------------------------------------------------------------------------

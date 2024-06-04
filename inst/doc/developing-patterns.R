@@ -1,4 +1,4 @@
-## ---- include = FALSE---------------------------------------------------------
+## ----include = FALSE----------------------------------------------------------
 knitr::opts_chunk$set(
 collapse = TRUE,
 dev = "ragg_png",
@@ -26,37 +26,6 @@ knitr::kable(x, caption = "example data in 'polygon_df' format")
 ## ----eval = FALSE-------------------------------------------------------------
 #  options(ggpattern_array_funcs    = list(your_pattern_name = your_pattern_function))
 #  options(ggpattern_geometry_funcs = list(your_pattern_name = your_pattern_function))
-
-## -----------------------------------------------------------------------------
-multicolor_stripe_pattern <- function(params, boundary_df, aspect_ratio, 
-                                      legend = FALSE) {
-    args <- as.list(params)
-    args <- args[grep("^pattern_", names(args))]
-
-    args$pattern_colour <- strsplit(args$pattern_colour, ",")[[1]]
-    args$pattern_fill <- strsplit(args$pattern_fill, ",")[[1]]
-
-    args$pattern <- "stripe"
-    args$x <- boundary_df$x
-    args$y <- boundary_df$y
-    args$id <- boundary_df$id
-    args$prefix <- ""
-
-    do.call(gridpattern::patternGrob, args)
-}
-
-## -----------------------------------------------------------------------------
-options(ggpattern_geometry_funcs = list(multicolor_stripe = multicolor_stripe_pattern))
-
-## -----------------------------------------------------------------------------
-df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
-ggplot(df, aes(trt, outcome)) +
-    geom_col_pattern(aes(fill = trt), colour = 'black', 
-                     pattern = 'multicolor_stripe',
-                     pattern_fill = "grey30,grey70,white,grey70",
-                     pattern_density = 0.2,
-                     pattern_spacing = 0.1) +
-    theme(legend.key.size = unit(1.2, 'cm'))
 
 ## -----------------------------------------------------------------------------
 tiling3_pattern <- function(params, boundary_df, aspect_ratio, legend = FALSE) {
