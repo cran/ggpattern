@@ -20,7 +20,7 @@ df <- data.frame(
   outcome = c(2.3, 1.9, 3.2)
 )
 
-## -----------------------------------------------------------------------------
+## ----plasma, fig.cap="", fig.alt="Example of 'plasma' pattern"----------------
 if (require("magick")) {
 
 ggplot(df, aes(trt, outcome)) +
@@ -44,7 +44,7 @@ ggplot(df, aes(trt, outcome)) +
 
 }
 
-## -----------------------------------------------------------------------------
+## ----plasma2, fig.cap="", fig.alt="Example of 'plasma' pattern with 'pattern_alpha = 0.7'"----
 if (require("magick")) {
 
 ggplot(mtcars) +
@@ -65,7 +65,7 @@ ggplot(mtcars) +
 
 }
 
-## -----------------------------------------------------------------------------
+## ----gradient, fig.cap="", fig.alt="Example of 'gradient' pattern fade to white"----
 if (require("magick")) {
 
 ggplot(df, aes(trt, outcome)) +
@@ -89,7 +89,7 @@ ggplot(df, aes(trt, outcome)) +
 
 }
 
-## -----------------------------------------------------------------------------
+## ----gradient2, fig.cap="", fig.alt="Example of 'gradient' pattern fade to dark blue"----
 if (require("magick")) {
 
 ggplot(df, aes(trt, outcome)) +
@@ -113,7 +113,7 @@ ggplot(df, aes(trt, outcome)) +
 
 }
 
-## -----------------------------------------------------------------------------
+## ----gradient3, fig.cap="", fig.alt="Example of 'gradient' pattern fade to transparent"----
 if (require("magick")) {
 
 ggplot(df, aes(trt, outcome)) +
@@ -136,7 +136,7 @@ ggplot(df, aes(trt, outcome)) +
 
 }
 
-## -----------------------------------------------------------------------------
+## ----gradient4, fig.cap="", fig.alt="Example of 'gradient' pattern with a non-rectangular geom"----
 if (require("magick")) {
 
 ggplot(mtcars) +
@@ -159,7 +159,7 @@ ggplot(mtcars) +
 
 }
 
-## -----------------------------------------------------------------------------
+## ----ambient, fig.cap="", fig.alt="Example of 'ambient' pattern"--------------
 if (require("ambient")) {
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
@@ -177,7 +177,7 @@ ggplot(df, aes(trt, outcome)) +
   theme(legend.position = 'none')
 }
 
-## -----------------------------------------------------------------------------
+## ----ambient2, fig.cap="", fig.alt="Another example of 'ambient' pattern"-----
 if (require("ambient")) {
 ggplot(mtcars) +
   geom_density_pattern(

@@ -17,20 +17,20 @@ suppressPackageStartupMessages({
 df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
 df
 
-## -----------------------------------------------------------------------------
+## ----plain, fig.cap="", fig.alt="Example of a plain ggplot2"------------------
 ggplot(df, aes(trt, outcome)) +
   geom_col(aes(fill=trt),colour='black') +
   theme_bw() +
   labs(title = "Plain ggplot2")
 
-## -----------------------------------------------------------------------------
+## ----ggpattern, fig.cap="", fig.alt="Example using ggpattern to make patterned geoms"----
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(aes(fill=trt),colour='black', pattern = 'circle') +
   theme_bw() +
   labs(title = "ggpattern") +
   theme(legend.key.size = unit(1.5, 'cm'))
 
-## -----------------------------------------------------------------------------
+## ----density, fig.cap="", fig.alt="Example of increasing density of striping"----
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
     aes(fill=trt, pattern_shape=trt),
@@ -42,7 +42,7 @@ ggplot(df, aes(trt, outcome)) +
   labs(title = "Fixed density of 0.5 (50% of the fill area)") + 
   theme(legend.key.size = unit(1.5, 'cm'))
 
-## -----------------------------------------------------------------------------
+## ----density2, fig.cap="", fig.alt="Example from using the density aesthetic as a mapped aesthetic"----
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
     aes(fill = trt, pattern_density = trt),
@@ -53,7 +53,7 @@ ggplot(df, aes(trt, outcome)) +
   labs(title = "Aesthetic Mapping of 'trt' to Density") + 
   theme(legend.key.size = unit(1.5, 'cm'))
 
-## -----------------------------------------------------------------------------
+## ----density3, fig.cap="", fig.alt="Example from using the density aesthetic as a mapped aesthetic with manual scale."----
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
     aes(fill = trt, pattern_density = trt),
@@ -69,7 +69,7 @@ ggplot(df, aes(trt, outcome)) +
   theme(legend.key.size = unit(1.5, 'cm')) + 
   scale_pattern_density_manual(values = c(a = 0.7, b=0.8, c=0.9))
 
-## -----------------------------------------------------------------------------
+## ----spacing, fig.cap="", fig.alt="Example from using the spacing aesthetic as a mapped aesthetic."----
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
     aes(fill = trt, pattern_spacing = trt, pattern_shape = trt),
@@ -83,7 +83,7 @@ ggplot(df, aes(trt, outcome)) +
   scale_pattern_shape_manual(values = c(a = "circle", b = "convex3", c = "star5")) +
   theme(legend.key.size = unit(1.5, 'cm'))
 
-## -----------------------------------------------------------------------------
+## ----fill, fig.cap="", fig.alt="Example from using the fill aesthetic as a mapped aesthetic."----
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
     aes(fill = trt, pattern_fill = trt),

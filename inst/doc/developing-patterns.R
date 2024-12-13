@@ -51,7 +51,7 @@ tiling3_pattern <- function(params, boundary_df, aspect_ratio, legend = FALSE) {
 ## -----------------------------------------------------------------------------
 options(ggpattern_geometry_funcs = list(tiling3 = tiling3_pattern))
 
-## -----------------------------------------------------------------------------
+## ----tiling3_pattern, fig.alt = "ggplot2 plot using a custom polygon tiling pattern fill."----
 df <- data.frame(trt = c("a", "b", "c"), outcome = c(2.3, 1.9, 3.2))
 ggplot(df, aes(trt, outcome)) +
     geom_col_pattern(aes(fill = trt, pattern_type = trt),

@@ -1,3 +1,10 @@
+# ggpattern 1.1.3
+
+## Bug fixes and minor improvements
+
+* Added alt text to vignette and README images.
+* Added missing package anchors to a few Rd cross-references (#128).
+
 # ggpattern 1.1.1
 
 ## Breaking changes
