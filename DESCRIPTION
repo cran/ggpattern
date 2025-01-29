@@ -1,7 +1,7 @@
 Package: ggpattern
 Type: Package
 Title: 'ggplot2' Pattern Geoms
-Version: 1.1.3
+Version: 1.1.4
 Authors@R: c(person("Mike", "FC", role = "aut"),
              person("Trevor L.", "Davis", role = c("aut", "cre"),
                     email = "trevor.l.davis@gmail.com",
@@ -37,10 +37,10 @@ Collate: 'a-geom-docs.R' 'aaa-ggplot2-compat-plyr.R'
         'scale-pattern-shape.R' 'scale-pattern-size.R'
         'scale-pattern-viridis.R' 'scale-pattern.R' 'zxx.r' 'zzz.R'
 NeedsCompilation: no
-Packaged: 2024-12-13 04:55:40 UTC; trevorld
+Packaged: 2025-01-28 23:05:53 UTC; trevor
 Author: Mike FC [aut],
   Trevor L. Davis [aut, cre] (<https://orcid.org/0000-0001-6341-4639>),
   ggplot2 authors [aut]
 Maintainer: Trevor L. Davis <trevor.l.davis@gmail.com>
 Repository: CRAN
-Date/Publication: 2024-12-13 17:00:02 UTC
+Date/Publication: 2025-01-29 00:30:02 UTC

@@ -24,8 +24,8 @@ x,  y,  id
 knitr::kable(x, caption = "example data in 'polygon_df' format")
 
 ## ----eval = FALSE-------------------------------------------------------------
-#  options(ggpattern_array_funcs    = list(your_pattern_name = your_pattern_function))
-#  options(ggpattern_geometry_funcs = list(your_pattern_name = your_pattern_function))
+# options(ggpattern_array_funcs    = list(your_pattern_name = your_pattern_function))
+# options(ggpattern_geometry_funcs = list(your_pattern_name = your_pattern_function))
 
 ## -----------------------------------------------------------------------------
 tiling3_pattern <- function(params, boundary_df, aspect_ratio, legend = FALSE) {

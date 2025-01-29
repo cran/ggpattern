@@ -7,6 +7,15 @@ knitr::opts_chunk$set(
   fig.height = 6
 )
 
+# Can't use {ragg} to save gradient example on CRAN due to UBSAN issue
+if (!identical(Sys.getenv("IN_PKGDOWN"), "true")) {
+  knitr::opts_chunk$set(
+    dev = "png",
+    dev.args = list(type = "cairo"),
+    eval = all(capabilities(c("png", "cairo")))
+  )
+}
+
 ## ----setup--------------------------------------------------------------------
 suppressPackageStartupMessages({
   library("ggplot2")
@@ -16,7 +25,7 @@ suppressPackageStartupMessages({
 
 ## -----------------------------------------------------------------------------
 df <- data.frame(
-  trt     = c("a", "b", "c"), 
+  trt     = c("a", "b", "c"),
   outcome = c(2.3, 1.9, 3.2)
 )
 
@@ -73,9 +82,9 @@ ggplot(df, aes(trt, outcome)) +
     aes(
       pattern_fill        = trt,
       pattern_orientation = trt
-    ), 
-    pattern       = 'gradient', 
-    pattern_fill2 = 'white', 
+    ),
+    pattern       = 'gradient',
+    pattern_fill2 = 'white',
     colour        = 'black'
   ) +
   theme_bw(15) +
@@ -97,9 +106,9 @@ ggplot(df, aes(trt, outcome)) +
     aes(
       pattern_fill        = trt,
       pattern_orientation = trt
-    ), 
-    pattern       = 'gradient', 
-    pattern_fill2 = '#445566', 
+    ),
+    pattern       = 'gradient',
+    pattern_fill2 = '#445566',
     colour        = 'black'
   ) +
   theme_bw(15) +
@@ -121,9 +130,9 @@ ggplot(df, aes(trt, outcome)) +
     aes(
       pattern_fill        = trt,
       pattern_orientation = trt
-    ), 
-    pattern       = 'gradient', 
-    pattern_fill2 = NA, 
+    ),
+    pattern       = 'gradient',
+    pattern_fill2 = NA,
     fill          = NA,
     colour        = 'black'
   ) +
@@ -142,12 +151,12 @@ if (require("magick")) {
 ggplot(mtcars) +
   geom_density_pattern(
     aes(
-      x = mpg, 
+      x = mpg,
       pattern_fill = as.factor(cyl),
       pattern_orientation = as.factor(cyl)
-    ), 
+    ),
     pattern       = 'gradient',
-    pattern_fill2 = NA, 
+    pattern_fill2 = NA,
     fill          = NA
   ) +
   theme_bw(15) +
@@ -164,9 +173,9 @@ if (require("ambient")) {
 ggplot(df, aes(trt, outcome)) +
   geom_col_pattern(
     aes(pattern_fill = trt),
-    pattern       = 'ambient', 
+    pattern       = 'ambient',
     pattern_fill2 = 'white',
-    colour        = NA, 
+    colour        = NA,
     fill          = NA
   ) +
   theme_bw(15) +
@@ -182,19 +191,19 @@ if (require("ambient")) {
 ggplot(mtcars) +
   geom_density_pattern(
     aes(
-      x = mpg, 
-      pattern_fill  = as.factor(cyl), 
+      x = mpg,
+      pattern_fill  = as.factor(cyl),
       pattern_fill2 = as.factor(cyl)
-    ), 
+    ),
     pattern = 'ambient'
   ) +
   theme_bw(15) +
-  theme(legend.key.size = unit(2, 'cm')) + 
-  scale_pattern_fill_brewer (palette = 'Accent', direction =  1) + 
-  scale_pattern_fill2_brewer(palette = 'Dark2' , direction =  1) + 
+  theme(legend.key.size = unit(2, 'cm')) +
+  scale_pattern_fill_brewer (palette = 'Accent', direction =  1) +
+  scale_pattern_fill2_brewer(palette = 'Dark2' , direction =  1) +
   labs(
     title    = "ggpattern::geom_density_pattern()",
     subtitle = "pattern = 'ambient'"
-  ) 
+  )
 }
 
